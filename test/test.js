@@ -16,7 +16,7 @@ function client() {
 
 // creates the server
 function server(srv, opts) {
-  return new Primus(srv, opts).use('rooms', rooms);
+  return new Primus(srv, opts).plugin('rooms', rooms);
 }
 
 describe('primus-rooms', function () {
@@ -55,6 +55,21 @@ describe('primus-rooms', function () {
           spark.leaveAll(done);
         });
       });
+    });
+
+    client();
+  });
+
+  it('should prevent closed sparks from joining rooms', function (done) {
+    primus.on('connection', function (spark) {
+      spark.on('end', function () {
+        spark.join('room1', function (err) {
+          expect(err).to.be.an(Error);
+          expect(err.message).to.be('Spark is closed');
+          done();
+        });
+      });
+      spark.end();
     });
 
     client();
@@ -718,7 +733,7 @@ describe('primus-rooms', function () {
       spark.join('news');
       spark.on('data', function () {
         spark.room('news').clients(function (err, clients) {
-          expect(clients.sort()).to.be.eql(ids);
+          expect(clients.sort()).to.be.eql(ids.sort());
           primus.empty(['news'], done);
         });
       });
@@ -743,7 +758,7 @@ describe('primus-rooms', function () {
       spark.join('room1');
       spark.on('data', function () {
         var clients = spark.room('room1').clients();
-        expect(clients.sort()).to.be.eql(ids);
+        expect(clients.sort()).to.be.eql(ids.sort());
         done();
       });
     });
@@ -1049,22 +1064,6 @@ describe('primus-rooms', function () {
     }
 
     throw new Error('Test invalidation');
-  });
-
-  it('should destroy references to instance', function (done) {
-    primus.on('connection', function (spark) {
-      var rms = spark._rooms;
-      spark._rooms.destroy(function () {
-        expect(spark._rooms).to.be(undefined);
-        expect(rms.primus).to.be(undefined);
-        expect(rms.ctx).to.be(undefined);
-        expect(rms.id).to.be(undefined);
-        spark.removeListener('end', rms.onend);
-        done();
-      });
-    });
-
-    client();
   });
 
   it('should get all clients connected to a room using primus method', function (done) {
@@ -1500,7 +1499,7 @@ describe('primus-rooms', function () {
       var total = 0
         , sender;
 
-      primus.use('emitter', 'primus-emitter');
+      primus.plugin('emitter', 'primus-emitter');
       primus.on('connection', function (spark) {
         spark.on('msg', function (data) {
           if ('send' === data) {
@@ -1653,7 +1652,7 @@ describe('primus-rooms', function () {
 
   describe('primus-emitter', function () {
     beforeEach(function () {
-      primus.use('emitter', 'primus-emitter');
+      primus.plugin('emitter', 'primus-emitter');
     });
 
     it('should ignore `primus-rooms` reserved events', function (done) {
@@ -1883,7 +1882,7 @@ describe('primus-rooms', function () {
 
   describe('primus-multiplex', function () {
     beforeEach(function () {
-      primus.use('multiplex', 'primus-multiplex');
+      primus.plugin('multiplex', 'primus-multiplex');
     });
 
     it('should allow joining a room', function (done) {
@@ -2012,7 +2011,7 @@ describe('primus-rooms', function () {
     });
 
     it('should allow broadcasting a message to multiple clients with channel `send` method', function (done) {
-      primus.use('emitter', 'primus-emitter');
+      primus.plugin('emitter', 'primus-emitter');
 
       var a = primus.channel('a')
         , total = 3;
@@ -2051,7 +2050,7 @@ describe('primus-rooms', function () {
     });
 
     it('should allow broadcasting a message to a client with emitter', function (done) {
-      primus.use('emitter', 'primus-emitter');
+      primus.plugin('emitter', 'primus-emitter');
 
       var a = primus.channel('a');
 
@@ -2082,7 +2081,7 @@ describe('primus-rooms', function () {
     });
 
     it('should allow broadcasting a message to multiple clients with emitter', function (done) {
-      primus.use('emitter', 'primus-emitter');
+      primus.plugin('emitter', 'primus-emitter');
 
       var a = primus.channel('a')
         , total = 3;
