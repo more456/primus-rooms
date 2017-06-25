@@ -1,7 +1,7 @@
 {
   "name": "primus-rooms",
-  "version": "3.4.1",
-  "description": "Simple rooms wrapper for Primus",
+  "version": "3.4.2",
+  "description": " Beta@Learning Simple rooms wrapper for Primus",
   "author": "Jonathan Brumley <cayasso@gmail.com>",
   "homepage": "https://github.com/cayasso/primus-rooms",
   "main": "index.js",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/cayasso/primus-rooms.git"
+    "url": "git://github.com/more456/primus-rooms.git"
   },
   "keywords": [
     "connection",
@@ -31,7 +31,7 @@
   "dependencies": {
     "async": "2.0.x",
     "debug": "2.2.x",
-    "primus-rooms-adapter": "0.3.x"
+    "primus-rooms-adapter": "git://github.com/more456/primus-rooms-adapter.git"
   },
   "devDependencies": {
     "expect.js": "^0.3.1",
@@ -39,9 +39,9 @@
     "matcha": "^0.7.0",
     "mocha": "^2.4.5",
     "pre-commit": "^1.1.3",
-    "primus": "^6.0.0",
-    "primus-emitter": "^3.1.1",
-    "primus-multiplex": "^3.2.0",
+    "primus": "^7.x",
+    "primus-emitter": "git://github.com/more456/primus-emitter.git",
+    "primus-multiplex": "git://github.com/more456/primus-multiplex.git",
     "ws": "^1.1.0"
   }
 }
